@@ -30,9 +30,6 @@ chmod +x deploy-container.sh
 ./deploy-container.sh portainer portainer/portainer-ce:latest 9000:9000 bridge
 
 
-```bash
-./deploy-container.sh portainer portainer/portainer-ce:latest 9000:9000 bridge
-```
 
 ## 支持容器列表
 
