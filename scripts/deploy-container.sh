@@ -54,7 +54,6 @@ chmod -R 755 "${DATA_DIR}"
 
 # 生成 docker-compose.yml
 cat > "${COMPOSE_DIR}/docker-compose.yml" <<EOF
-version: '3.8'
 
 services:
   ${NAME}:
