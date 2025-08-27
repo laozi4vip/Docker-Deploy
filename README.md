@@ -25,6 +25,11 @@ chmod +x deploy-container.sh
 
 ## 示例
 
+curl -O https://raw.githubusercontent.com/laozi4vip/Docker-Deploy/main/scripts/deploy-container.sh
+chmod +x deploy-container.sh
+./deploy-container.sh portainer portainer/portainer-ce:latest 9000:9000 bridge
+
+
 ```bash
 ./deploy-container.sh portainer portainer/portainer-ce:latest 9000:9000 bridge
 ```
