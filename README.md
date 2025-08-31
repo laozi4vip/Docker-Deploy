@@ -25,6 +25,7 @@ chmod +x deploy-container.sh
 
 ## 示例
 
+```
 curl -O https://raw.githubusercontent.com/laozi4vip/Docker-Deploy/main/scripts/deploy-container.sh
 chmod +x deploy-container.sh
 ./deploy-container.sh dpanel dpanel/dpanel:latest "" host
@@ -32,6 +33,7 @@ chmod +x deploy-container.sh
 
 #容器部署命令
 
+```
 ./deploy-container.sh agh1 adguard/adguardhome:latest "" host
 ./deploy-container.sh agh2 adguard/adguardhome:latest "" host
 ./deploy-container.sh lucky gdy666/lucky "" host
@@ -41,7 +43,7 @@ chmod +x deploy-container.sh
 ./deploy-container.sh portainer portainer/portainer-ce:latest 9000:9000 bridge
 ./deploy-container.sh sub-store xream/sub-store 3001:3001 host
 ./deploy-container.sh sun-panel hslr/sun-panel:latest 1114:3002 bridge
-
+```
 
 ## 支持容器列表
 
