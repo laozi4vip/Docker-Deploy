@@ -41,8 +41,8 @@ chmod +x deploy-container.sh
 ```
 ./deploy-container.sh agh1 adguard/adguardhome:latest "" host
 ./deploy-container.sh agh2 adguard/adguardhome:latest "" host
-./deploy-container.sh lucky gdy666/lucky "" host
-./deploy-container.sh dpanel dpanel/dpanel:latest "" host
+./deploy-container.sh lucky gdy666/lucky "" host   #默认端口16601
+./deploy-container.sh dpanel dpanel/dpanel:latest "" host  
 ./deploy-container.sh memos neosmemo/memos:stable 5230:5230 bridge
 ./deploy-container.sh moontv ghcr.io/samqin123/moontv:latest 8888:3000 bridge
 ./deploy-container.sh portainer portainer/portainer-ce:latest 9000:9000 bridge
