@@ -28,7 +28,7 @@ chmod +x deploy-container.sh
 curl -O https://raw.githubusercontent.com/laozi4vip/Docker-Deploy/main/scripts/deploy-container.sh
 chmod +x deploy-container.sh
 ./deploy-container.sh dpanel dpanel/dpanel:latest "" host
-
+```
 
 #容器部署命令
 
