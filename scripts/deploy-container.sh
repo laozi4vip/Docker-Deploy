@@ -16,6 +16,8 @@ fi
 
 # 配置表：挂载路径
 declare -A VOLUME_MAP=(
+  ["smartdns"]="/dockers-date/smartdns/conf:/etc/smartdns"
+  ["adguardhome"]="/dockers-date/adguardhome/config:/opt/adguardhome/conf,/dockers-date/adguardhome/work:/opt/adguardhome/work"
   ["agh1"]="/dockers-date/agh1/work:/opt/adguardhome/work,/dockers-date/agh1/conf:/opt/adguardhome/conf"
   ["agh2"]="/dockers-date/agh2/work:/opt/adguardhome/work,/dockers-date/agh2/conf:/opt/adguardhome/conf"
   ["lucky"]="/dockers-date/lucky/conf:/goodluck"
