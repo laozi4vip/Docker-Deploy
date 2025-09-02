@@ -40,7 +40,7 @@ chmod +x deploy-container.sh
 
 ```
 ./deploy-container.sh smartdns pymumu/smartdns:latest 1053:53/udp,1053:53/tcp bridge  #自动加入dns-net网络
-./deploy-container.sh adguardhome adguard/adguardhome:latest 80:80,3000:3000,53:53/tcp,53:53/udp host  #自动加入dns-net网络
+./deploy-container.sh adguardhome adguard/adguardhome:latest 80:80,3000:3000,5553:53/tcp,5553:53/udp bridge  #自动加入dns-net网络
 ./deploy-container.sh agh1 adguard/adguardhome:latest "" host
 ./deploy-container.sh agh2 adguard/adguardhome:latest "" host
 ./deploy-container.sh lucky gdy666/lucky "" host   #默认端口16601
@@ -48,7 +48,7 @@ chmod +x deploy-container.sh
 ./deploy-container.sh memos neosmemo/memos:stable 5230:5230 bridge
 ./deploy-container.sh moontv ghcr.io/samqin123/moontv:latest 8888:3000 bridge
 ./deploy-container.sh portainer portainer/portainer-ce:latest 9000:9000 bridge
-./deploy-container.sh sub-store xream/sub-store 3001:3001 host
+./deploy-container.sh sub-store xream/sub-store 3001:3001 bridge
 ./deploy-container.sh sun-panel hslr/sun-panel:latest 1114:3002 bridge                    #默认账号为 admin@sun.cc ，密码为 12345678
 ```
 
