@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 
-# 配置表：容器所属网络（可选）
-declare -A NETWORK_MAP=(
-  ["smartdns"]="dns-net"
-  ["adguardhome"]="dns-net"
-)
-
 # 参数定义
 NAME="$1"         # 容器名称
 IMAGE="$2"        # 镜像名称
-PORT="$3"         # 端口映射，例如 8888:3000,1053:53/udp
+PORT="$3"         # 端口映射，例如 8888:3000
 NETWORK="$4"      # 网络模式：bridge 或 host
 
 # 参数校验
@@ -60,18 +54,8 @@ done
 chown -R 1000:1000 "${DATA_DIR}"
 chmod -R 755 "${DATA_DIR}"
 
-# 网络配置
-CUSTOM_NET="${NETWORK_MAP[$NAME]}"
-if [[ -n "$CUSTOM_NET" ]]; then
-  if ! docker network inspect "$CUSTOM_NET" >/dev/null 2>&1; then
-    echo "🌐 创建自定义网络：$CUSTOM_NET"
-    docker network create "$CUSTOM_NET"
-  fi
-fi
-
 # 生成 docker-compose.yml
 cat > "${COMPOSE_DIR}/docker-compose.yml" <<EOF
-version: '3.8'
 
 services:
   ${NAME}:
@@ -80,21 +64,15 @@ services:
     restart: unless-stopped
 EOF
 
-# 网络写入
-if [[ -n "$CUSTOM_NET" ]]; then
-  echo "    networks:" >> "${COMPOSE_DIR}/docker-compose.yml"
-  echo "      - ${CUSTOM_NET}" >> "${COMPOSE_DIR}/docker-compose.yml"
-elif [[ "$NETWORK" == "host" ]]; then
+# 网络配置
+if [[ "$NETWORK" == "host" ]]; then
   echo "    network_mode: host" >> "${COMPOSE_DIR}/docker-compose.yml"
-elif [[ -n "$PORT" ]]; then
+else
   echo "    ports:" >> "${COMPOSE_DIR}/docker-compose.yml"
-  IFS=',' read -ra PORTS <<< "$PORT"
-  for p in "${PORTS[@]}"; do
-    echo "      - \"$p\"" >> "${COMPOSE_DIR}/docker-compose.yml"
-  done
+  echo "      - \"${PORT}\"" >> "${COMPOSE_DIR}/docker-compose.yml"
 fi
 
-# 环境变量写入
+# 环境变量配置
 if [[ -n "${ENV_MAP[$NAME]}" ]]; then
   echo "    environment:" >> "${COMPOSE_DIR}/docker-compose.yml"
   IFS=',' read -ra ENV_PAIRS <<< "${ENV_MAP[$NAME]}"
@@ -105,19 +83,11 @@ if [[ -n "${ENV_MAP[$NAME]}" ]]; then
   done
 fi
 
-# 挂载卷写入
+# 挂载卷配置（修复为数组格式）
 echo "    volumes:" >> "${COMPOSE_DIR}/docker-compose.yml"
 for vol in "${VOLUMES[@]}"; do
   echo "      - ${vol}" >> "${COMPOSE_DIR}/docker-compose.yml"
 done
-
-# 网络定义写入（底部）
-if [[ -n "$CUSTOM_NET" ]]; then
-  echo "" >> "${COMPOSE_DIR}/docker-compose.yml"
-  echo "networks:" >> "${COMPOSE_DIR}/docker-compose.yml"
-  echo "  ${CUSTOM_NET}:" >> "${COMPOSE_DIR}/docker-compose.yml"
-  echo "    external: true" >> "${COMPOSE_DIR}/docker-compose.yml"
-fi
 
 # 拉取镜像
 echo "📦 拉 取 镜 像 ： ${IMAGE}"
