@@ -39,8 +39,8 @@ chmod +x deploy-container.sh
 #容器部署命令
 
 ```
-./deploy-container.sh smartdns pymumu/smartdns:latest 1053:53/udp,1053:53/tcp bridge
-./deploy-container.sh adguardhome adguard/adguardhome:latest 80:80,3000:3000,53:53/tcp,53:53/udp bridge
+./deploy-container.sh smartdns pymumu/smartdns:latest 1053:53/udp,1053:53/tcp bridge  #自动加入dns-net网络
+./deploy-container.sh adguardhome adguard/adguardhome:latest 80:80,3000:3000,53:53/tcp,53:53/udp bridge  #自动加入dns-net网络
 ./deploy-container.sh agh1 adguard/adguardhome:latest "" host
 ./deploy-container.sh agh2 adguard/adguardhome:latest "" host
 ./deploy-container.sh lucky gdy666/lucky "" host   #默认端口16601
