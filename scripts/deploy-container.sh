@@ -67,10 +67,14 @@ EOF
 # 网络配置
 if [[ "$NETWORK" == "host" ]]; then
   echo "    network_mode: host" >> "${COMPOSE_DIR}/docker-compose.yml"
-else
+elif [[ -n "$PORT" ]]; then
   echo "    ports:" >> "${COMPOSE_DIR}/docker-compose.yml"
-  echo "      - \"${PORT}\"" >> "${COMPOSE_DIR}/docker-compose.yml"
+  IFS=',' read -ra PORTS <<< "${PORT}"
+  for p in "${PORTS[@]}"; do
+    echo "      - \"$p\"" >> "${COMPOSE_DIR}/docker-compose.yml"
+  done
 fi
+
 
 # 环境变量配置
 if [[ -n "${ENV_MAP[$NAME]}" ]]; then
