@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# 配置表：容器所属网络（可选）
+declare -A NETWORK_MAP=(
+  ["smartdns"]="dns-net"
+  ["adguardhome"]="dns-net"
+)
+
 # 参数定义
 NAME="$1"         # 容器名称
 IMAGE="$2"        # 镜像名称
@@ -65,11 +71,25 @@ services:
 EOF
 
 # 网络配置
-if [[ "$NETWORK" == "host" ]]; then
-  echo "    network_mode: host" >> "${COMPOSE_DIR}/docker-compose.yml"
+# 网络配置
+CUSTOM_NET="${NETWORK_MAP[$NAME]}"
+
+if [[ -n "$CUSTOM_NET" ]]; then
+  # 自动创建网络（如果不存在）
+  if ! docker network inspect "$CUSTOM_NET" >/dev/null 2>&1; then
+    echo "🌐 创建自定义网络：$CUSTOM_NET"
+    docker network create "$CUSTOM_NET"
+  fi
+  echo "    networks:" >> "${COMPOSE_DIR}/docker-compose.yml"
+  echo "      - ${CUSTOM_NET}" >> "${COMPOSE_DIR}/docker-compose.yml"
 else
-  echo "    ports:" >> "${COMPOSE_DIR}/docker-compose.yml"
-  echo "      - \"${PORT}\"" >> "${COMPOSE_DIR}/docker-compose.yml"
+  # 默认网络配置
+  if [[ "$NETWORK" == "host" ]]; then
+    echo "    network_mode: host" >> "${COMPOSE_DIR}/docker-compose.yml"
+  else
+    echo "    ports:" >> "${COMPOSE_DIR}/docker-compose.yml"
+    echo "      - \"${PORT}\"" >> "${COMPOSE_DIR}/docker-compose.yml"
+  fi
 fi
 
 # 环境变量配置
