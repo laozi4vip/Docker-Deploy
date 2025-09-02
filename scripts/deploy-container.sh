@@ -81,13 +81,17 @@ services:
 EOF
 
 
-# 网络写入
+# 网络写入（host 优先）
 if [[ "$NETWORK" == "host" ]]; then
   echo "    network_mode: host" >> "${COMPOSE_DIR}/docker-compose.yml"
-elif [[ -n "$CUSTOM_NET" ]]; then
-  echo "    networks:" >> "${COMPOSE_DIR}/docker-compose.yml"
-  echo "      - ${CUSTOM_NET}" >> "${COMPOSE_DIR}/docker-compose.yml"
+else
+  CUSTOM_NET="${NETWORK_MAP[$NAME]}"
+  if [[ -n "$CUSTOM_NET" ]]; then
+    echo "    networks:" >> "${COMPOSE_DIR}/docker-compose.yml"
+    echo "      - ${CUSTOM_NET}" >> "${COMPOSE_DIR}/docker-compose.yml"
+  fi
 fi
+
 
 # 端口映射写入（无论网络模式）
 if [[ -n "$PORT" && "$NETWORK" != "host" ]]; then
