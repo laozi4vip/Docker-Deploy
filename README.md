@@ -53,7 +53,8 @@ chmod +x deploy-container.sh
 ```
 
 ## 支持容器列表
-
+- smartdns
+- adguardhome
 - agh1 / agh2
 - lucky
 - dpanel
