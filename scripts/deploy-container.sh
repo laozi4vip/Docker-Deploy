@@ -7,12 +7,11 @@ declare -A NETWORK_MAP=(
 )
 
 # 参数定义
-NAME="$1"         # 容器名称
-IMAGE="$2"        # 镜像名称
-PORT="$3"         # 端口映射，例如 8888:3000,1053:53/udp
-NETWORK="$4"      # 网络模式：bridge 或 host
+NAME="$1"
+IMAGE="$2"
+PORT="$3"
+NETWORK="$4"
 
-# 参数校验
 if [[ -z "$NAME" || -z "$IMAGE" ]]; then
   echo "❌ 用法: $0 <容器名> <镜像名> [端口映射] [host|bridge]"
   exit 1
@@ -24,22 +23,12 @@ fi
 declare -A VOLUME_MAP=(
   ["smartdns"]="/dockers-date/smartdns/conf:/etc/smartdns"
   ["adguardhome"]="/dockers-date/adguardhome/config:/opt/adguardhome/conf,/dockers-date/adguardhome/work:/opt/adguardhome/work"
-  ["agh1"]="/dockers-date/agh1/work:/opt/adguardhome/work,/dockers-date/agh1/conf:/opt/adguardhome/conf"
-  ["agh2"]="/dockers-date/agh2/work:/opt/adguardhome/work,/dockers-date/agh2/conf:/opt/adguardhome/conf"
-  ["lucky"]="/dockers-date/lucky/conf:/goodluck"
-  ["dpanel"]="/dockers-date/dpanel/data:/dpanel,/var/run/docker.sock:/var/run/docker.sock"
-  ["memos"]="/dockers-date/memos/data:/var/opt/memos"
-  ["moontv"]="/dockers-date/moontv/data:/opt/app/data"
-  ["portainer"]="/dockers-date/portainer/data:/data,/var/run/docker.sock:/var/run/docker.sock"
-  ["sub-store"]="/dockers-date/sub-store/data:/opt/app/data"
-  ["sun-panel"]="/dockers-date/sun-panel/conf:/app/conf,/var/run/docker.sock:/var/run/docker.sock"
+  # 其他容器略...
 )
 
-# 配置表：环境变量
+# 配置表：环境变量（如有）
 declare -A ENV_MAP=(
-  ["moontv"]="PASSWORD=hhxxttxs121"
-  ["sub-store"]="SUB_STORE_FRONTEND_BACKEND_PATH=/hhxxttxs121"
-  ["dpanel"]="APP_NAME=dpanel"
+  # 可选环境变量配置
 )
 
 # 定义目录结构
@@ -49,14 +38,12 @@ DATA_DIR="/dockers-date/${NAME}"
 mkdir -p "${COMPOSE_DIR}"
 mkdir -p "${DATA_DIR}"
 
-# 自动创建挂载目录
 IFS=',' read -ra VOLUMES <<< "${VOLUME_MAP[$NAME]}"
 for vol in "${VOLUMES[@]}"; do
   HOST_PATH=$(echo "$vol" | cut -d ':' -f 1)
   mkdir -p "$HOST_PATH"
 done
 
-# 修复权限（可根据容器用户调整）
 chown -R 1000:1000 "${DATA_DIR}"
 chmod -R 755 "${DATA_DIR}"
 
@@ -71,7 +58,7 @@ fi
 
 # 生成 docker-compose.yml
 cat > "${COMPOSE_DIR}/docker-compose.yml" <<EOF
-version: '3'
+version: '3.8'
 
 services:
   ${NAME}:
@@ -94,7 +81,7 @@ elif [[ -n "$PORT" ]]; then
   done
 fi
 
-# 环境变量写入
+# 环境变量写入（如有）
 if [[ -n "${ENV_MAP[$NAME]}" ]]; then
   echo "    environment:" >> "${COMPOSE_DIR}/docker-compose.yml"
   IFS=',' read -ra ENV_PAIRS <<< "${ENV_MAP[$NAME]}"
