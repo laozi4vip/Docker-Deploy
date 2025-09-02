@@ -86,13 +86,17 @@ if [[ -n "$CUSTOM_NET" ]]; then
   echo "      - ${CUSTOM_NET}" >> "${COMPOSE_DIR}/docker-compose.yml"
 elif [[ "$NETWORK" == "host" ]]; then
   echo "    network_mode: host" >> "${COMPOSE_DIR}/docker-compose.yml"
-elif [[ -n "$PORT" ]]; then
+fi
+
+# 端口映射写入（无论网络模式）
+if [[ -n "$PORT" && "$NETWORK" != "host" ]]; then
   echo "    ports:" >> "${COMPOSE_DIR}/docker-compose.yml"
   IFS=',' read -ra PORTS <<< "${PORT}"
   for p in "${PORTS[@]}"; do
     echo "      - \"$p\"" >> "${COMPOSE_DIR}/docker-compose.yml"
   done
 fi
+
 
 # 环境变量写入
 if [[ -n "${ENV_MAP[$NAME]}" ]]; then
