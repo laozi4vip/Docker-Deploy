@@ -80,12 +80,13 @@ services:
     restart: unless-stopped
 EOF
 
+
 # 网络写入
-if [[ -n "$CUSTOM_NET" ]]; then
+if [[ "$NETWORK" == "host" ]]; then
+  echo "    network_mode: host" >> "${COMPOSE_DIR}/docker-compose.yml"
+elif [[ -n "$CUSTOM_NET" ]]; then
   echo "    networks:" >> "${COMPOSE_DIR}/docker-compose.yml"
   echo "      - ${CUSTOM_NET}" >> "${COMPOSE_DIR}/docker-compose.yml"
-elif [[ "$NETWORK" == "host" ]]; then
-  echo "    network_mode: host" >> "${COMPOSE_DIR}/docker-compose.yml"
 fi
 
 # 端口映射写入（无论网络模式）
