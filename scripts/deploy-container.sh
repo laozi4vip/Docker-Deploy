@@ -49,12 +49,22 @@ DATA_DIR="/dockers-date/${NAME}"
 mkdir -p "${COMPOSE_DIR}"
 mkdir -p "${DATA_DIR}"
 
-# 自动创建挂载目录
-IFS=',' read -ra VOLUMES <<< "${VOLUME_MAP[$NAME]}"
-for vol in "${VOLUMES[@]}"; do
-  HOST_PATH=$(echo "$vol" | cut -d ':' -f 1)
-  mkdir -p "$HOST_PATH"
-done
+# ✅ 初始化挂载路径数组并创建目录
+echo "🔍 挂载路径定义：${VOLUME_MAP[$NAME]}"  
+if [[ -n "${VOLUME_MAP[$NAME]}" ]]; then
+  IFS=',' read -ra VOLUMES <<< "${VOLUME_MAP[$NAME]}"
+  for vol in "${VOLUMES[@]}"; do
+    HOST_PATH=$(echo "$vol" | cut -d ':' -f 1)
+    if [[ ! -d "$HOST_PATH" ]]; then
+      echo "📁 创建挂载目录：$HOST_PATH"
+      mkdir -p "$HOST_PATH"
+    fi
+  done
+else
+  VOLUMES=()
+fi
+
+
 
 # 修复权限（可根据容器用户调整）
 chown -R 1000:1000 "${DATA_DIR}"
