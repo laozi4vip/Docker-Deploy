@@ -40,7 +40,7 @@ chmod +x deploy-container.sh
 
 ```
 ./deploy-container.sh smartdns pikuzheng/smartdns:latest 1053:53/udp,1053:53/tcp bridge  #自动加入dns-net网络
-./deploy-container.sh adguardhome adguard/adguardhome:latest 80:80,3000:3000,5553:53/tcp,5553:53/udp bridge  #自动加入dns-net网络
+./deploy-container.sh adguardhome adguard/adguardhome:latest 80:80,3000:3000,53:53/tcp,53:53/udp bridge  #自动加入dns-net网络
 ./deploy-container.sh agh1 adguard/adguardhome:latest "" host
 ./deploy-container.sh agh2 adguard/adguardhome:latest "" host
 ./deploy-container.sh lucky gdy666/lucky "" host   #默认端口16601
