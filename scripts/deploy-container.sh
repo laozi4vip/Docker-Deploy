@@ -27,6 +27,7 @@ declare -A VOLUME_MAP=(
   ["portainer"]="/dockers-date/portainer/data:/data,/var/run/docker.sock:/var/run/docker.sock"
   ["sub-store"]="/dockers-date/sub-store/data:/opt/app/data"
   ["sun-panel"]="/dockers-date/sun-panel/conf:/app/conf,/var/run/docker.sock:/var/run/docker.sock"
+  ["ange-clashboard"]="/dockers-date/ange-clashboard/data:/app/data"
 )
 
 # 配置表：环境变量
