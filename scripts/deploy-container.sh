@@ -14,6 +14,11 @@ fi
 
 [[ -z "$NETWORK" ]] && NETWORK="bridge"
 
+if [[ "$NETWORK" != "bridge" && "$NETWORK" != "host" ]]; then
+  echo "❌ 网络模式必须是 bridge 或 host"
+  exit 1
+fi
+
 # 配置表：挂载路径
 declare -A VOLUME_MAP=(
   ["smartdns"]="/dockers-date/smartdns/conf:/etc/smartdns"
@@ -50,26 +55,47 @@ DATA_DIR="/dockers-date/${NAME}"
 mkdir -p "${COMPOSE_DIR}"
 mkdir -p "${DATA_DIR}"
 
-# ✅ 初始化挂载路径数组并创建目录
-echo "🔍 挂载路径定义：${VOLUME_MAP[$NAME]}"  
+# 初始化挂载路径数组并创建目录
+declare -a VOLUMES=()
+declare -a CHOWN_DIRS=()
+
+echo "🔍 挂载路径定义：${VOLUME_MAP[$NAME]}"
 if [[ -n "${VOLUME_MAP[$NAME]}" ]]; then
   IFS=',' read -ra VOLUMES <<< "${VOLUME_MAP[$NAME]}"
+
   for vol in "${VOLUMES[@]}"; do
-    HOST_PATH=$(echo "$vol" | cut -d ':' -f 1)
+    HOST_PATH="${vol%%:*}"
+
+    # .sock 这类文件挂载只检查父目录，不创建文件本身
+    if [[ "$HOST_PATH" == *.sock ]]; then
+      PARENT_DIR="$(dirname "$HOST_PATH")"
+      if [[ ! -d "$PARENT_DIR" ]]; then
+        echo "📁 创建父目录：$PARENT_DIR"
+        mkdir -p "$PARENT_DIR"
+      fi
+
+      if [[ ! -e "$HOST_PATH" ]]; then
+        echo "⚠️ 挂载文件不存在：$HOST_PATH"
+      fi
+      continue
+    fi
+
     if [[ ! -d "$HOST_PATH" ]]; then
       echo "📁 创建挂载目录：$HOST_PATH"
       mkdir -p "$HOST_PATH"
     fi
+
+    CHOWN_DIRS+=("$HOST_PATH")
   done
-else
-  VOLUMES=()
 fi
 
-
-
-# 修复权限（可根据容器用户调整）
-chown -R 1000:1000 "${DATA_DIR}"
-chmod -R 755 "${DATA_DIR}"
+# 修复权限，只处理实际存在的目录挂载
+for dir in "${CHOWN_DIRS[@]}"; do
+  if [[ -d "$dir" ]]; then
+    chown -R 1000:1000 "$dir"
+    chmod -R 755 "$dir"
+  fi
+done
 
 # 网络配置
 CUSTOM_NET="${NETWORK_MAP[$NAME]}"
@@ -82,8 +108,6 @@ fi
 
 # 生成 docker-compose.yml
 cat > "${COMPOSE_DIR}/docker-compose.yml" <<EOF
-version: '3.8'
-
 services:
   ${NAME}:
     image: ${IMAGE}
@@ -91,20 +115,17 @@ services:
     restart: unless-stopped
 EOF
 
-
 # 网络写入（host 优先）
 if [[ "$NETWORK" == "host" ]]; then
   echo "    network_mode: host" >> "${COMPOSE_DIR}/docker-compose.yml"
 else
-  CUSTOM_NET="${NETWORK_MAP[$NAME]}"
   if [[ -n "$CUSTOM_NET" ]]; then
     echo "    networks:" >> "${COMPOSE_DIR}/docker-compose.yml"
     echo "      - ${CUSTOM_NET}" >> "${COMPOSE_DIR}/docker-compose.yml"
   fi
 fi
 
-
-# 端口映射写入（无论网络模式）
+# 端口映射写入
 if [[ -n "$PORT" && "$NETWORK" != "host" ]]; then
   echo "    ports:" >> "${COMPOSE_DIR}/docker-compose.yml"
   IFS=',' read -ra PORTS <<< "${PORT}"
@@ -113,26 +134,27 @@ if [[ -n "$PORT" && "$NETWORK" != "host" ]]; then
   done
 fi
 
-
 # 环境变量写入
 if [[ -n "${ENV_MAP[$NAME]}" ]]; then
   echo "    environment:" >> "${COMPOSE_DIR}/docker-compose.yml"
   IFS=',' read -ra ENV_PAIRS <<< "${ENV_MAP[$NAME]}"
   for pair in "${ENV_PAIRS[@]}"; do
-    KEY=$(echo "$pair" | cut -d '=' -f 1)
-    VALUE=$(echo "$pair" | cut -d '=' -f 2-)
+    KEY="${pair%%=*}"
+    VALUE="${pair#*=}"
     echo "      ${KEY}: \"${VALUE}\"" >> "${COMPOSE_DIR}/docker-compose.yml"
   done
 fi
 
 # 挂载卷写入
-echo "    volumes:" >> "${COMPOSE_DIR}/docker-compose.yml"
-for vol in "${VOLUMES[@]}"; do
-  echo "      - ${vol}" >> "${COMPOSE_DIR}/docker-compose.yml"
-done
+if [[ ${#VOLUMES[@]} -gt 0 ]]; then
+  echo "    volumes:" >> "${COMPOSE_DIR}/docker-compose.yml"
+  for vol in "${VOLUMES[@]}"; do
+    echo "      - ${vol}" >> "${COMPOSE_DIR}/docker-compose.yml"
+  done
+fi
 
 # 网络定义写入（底部）
-if [[ -n "$CUSTOM_NET" ]]; then
+if [[ "$NETWORK" != "host" && -n "$CUSTOM_NET" ]]; then
   echo "" >> "${COMPOSE_DIR}/docker-compose.yml"
   echo "networks:" >> "${COMPOSE_DIR}/docker-compose.yml"
   echo "  ${CUSTOM_NET}:" >> "${COMPOSE_DIR}/docker-compose.yml"
@@ -141,7 +163,9 @@ fi
 
 # 拉取镜像
 echo "📦 拉 取 镜 像 ： ${IMAGE}"
-docker pull "${IMAGE}"
+if ! docker pull "${IMAGE}"; then
+  echo "⚠️ 镜像拉取失败，继续尝试使用本地缓存镜像启动"
+fi
 
 # 启动容器
 echo "🚀 启 动 容 器 ： ${NAME}"
