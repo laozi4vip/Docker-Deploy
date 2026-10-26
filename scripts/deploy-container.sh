@@ -13,10 +13,17 @@ if [[ "$NAME" == "sub-store" ]]; then
   PORT="${PORT:-3001:3001}"
 fi
 
+# New API 默认参数，也可以通过命令行覆盖
+if [[ "$NAME" == "new-api" ]]; then
+  IMAGE="${IMAGE:-calciumion/new-api:latest}"
+  PORT="${PORT:-3000:3000}"
+fi
+
 # 参数校验
 if [[ -z "$NAME" || -z "$IMAGE" ]]; then
   echo "❌ 用法: $0 <容器名> <镜像名> [端口映射] [host|bridge]"
   echo "   Sub-Store 快捷部署: $0 sub-store"
+  echo "   New API 快捷部署:   $0 new-api"
   exit 1
 fi
 
@@ -41,6 +48,7 @@ declare -A VOLUME_MAP=(
   ["sub-store"]="/dockers-date/sub-store/data:/opt/app/data"
   ["ange-panel"]="/dockers-date/sun-panel/conf:/app/conf,/var/run/docker.sock:/var/run/docker.sock"
   ["ange-clashboard"]="/dockers-date/ange-clashboard/data:/app/data"
+  ["new-api"]="/dockers-date/new-api/data:/data"
 )
 
 # 配置表：环境变量
@@ -53,6 +61,7 @@ SUB_STORE_BACKEND_API_PORT=3001
 SUB_STORE_FRONTEND_BACKEND_PATH=/xh
 SUB_STORE_CORS_ALLOWED_ORIGINS=http://10.0.0.3:3001,https://sub.xinghui.info:4443
 SUB_STORE_BACKEND_SYNC_CRON=55 23 * * *"
+  ["new-api"]="TZ=Asia/Shanghai"
 )
 
 # 配置表：容器所属网络（可选）
@@ -73,6 +82,24 @@ COMPOSE_FILE="${COMPOSE_DIR}/docker-compose.yml"
 RESTART_POLICY="${RESTART_MAP[$NAME]:-unless-stopped}"
 
 mkdir -p "$COMPOSE_DIR" "$DATA_DIR"
+
+# New API：生成并持久化 SESSION_SECRET，重复部署时复用同一个值
+if [[ "$NAME" == "new-api" ]]; then
+  SECRET_FILE="${DATA_DIR}/.session_secret"
+
+  if [[ ! -s "$SECRET_FILE" ]]; then
+    echo "🔑 生成 New API SESSION_SECRET：$SECRET_FILE"
+    if command -v openssl >/dev/null 2>&1; then
+      openssl rand -hex 32 > "$SECRET_FILE"
+    else
+      head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$SECRET_FILE"
+    fi
+    chmod 600 "$SECRET_FILE"
+  fi
+
+  NEW_API_SECRET="$(tr -d '[:space:]' < "$SECRET_FILE")"
+  ENV_MAP["new-api"]+=$'\n'"SESSION_SECRET=${NEW_API_SECRET}"
+fi
 
 # 初始化挂载路径数组并创建目录
 declare -a VOLUMES=()
@@ -195,6 +222,11 @@ networks:
   ${CUSTOM_NET}:
     external: true
 EOF
+fi
+
+# 生成的 compose 文件可能含密钥，限制读取权限
+if [[ "$NAME" == "new-api" ]]; then
+  chmod 600 "$COMPOSE_FILE"
 fi
 
 # 检查 Compose 配置
