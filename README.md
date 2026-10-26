@@ -51,6 +51,7 @@ chmod +x deploy-container.sh
 ./deploy-container.sh sub-store xream/sub-store 3001:3001 bridge
 ./deploy-container.sh ange-panel ghcr.io/liandu2024/ange-panel:latest 1114:3002 bridge                    #默认账号为 admin@sun.cc ，密码为 12345678
 ./deploy-container.sh ange-clashboard ghcr.io/liandu2024/ange-clashboard:latest 6588:2048 bridge
+./deploy-container.sh new-api "" 8090:3000 
 ```
 
 ## 支持容器列表
