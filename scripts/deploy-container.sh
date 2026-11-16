@@ -46,7 +46,7 @@ declare -A VOLUME_MAP=(
   ["moontv"]="/dockers-date/moontv/data:/opt/app/data"
   ["portainer"]="/dockers-date/portainer/data:/data,/var/run/docker.sock:/var/run/docker.sock"
   ["sub-store"]="/dockers-date/sub-store/data:/opt/app/data"
-  ["xh-panel"]="/dockers-date/xh-panel/conf:/date,/dockers-date/xh-panel/conf:/app/conf,/var/run/docker.sock:/var/run/docker.sock"
+  ["xh-panel"]="/dockers-date/xh-panel/date:/date,/dockers-date/xh-panel/conf:/app/conf,/var/run/docker.sock:/var/run/docker.sock"
   ["ange-clashboard"]="/dockers-date/ange-clashboard/data:/app/data"
   ["new-api"]="/dockers-date/new-api/data:/data"
 )
