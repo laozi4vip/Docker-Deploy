@@ -36,19 +36,19 @@ fi
 
 # 配置表：挂载路径
 declare -A VOLUME_MAP=(
-  ["smartdns"]="/dockers-date/smartdns/conf:/etc/smartdns"
-  ["adguardhome"]="/dockers-date/adguardhome/config:/opt/adguardhome/conf,/dockers-date/adguardhome/work:/opt/adguardhome/work"
-  ["agh1"]="/dockers-date/agh1/work:/opt/adguardhome/work,/dockers-date/agh1/conf:/opt/adguardhome/conf"
-  ["agh2"]="/dockers-date/agh2/work:/opt/adguardhome/work,/dockers-date/agh2/conf:/opt/adguardhome/conf"
-  ["lucky"]="/dockers-date/lucky/conf:/goodluck"
-  ["dpanel"]="/dockers-date/dpanel/data:/dpanel,/var/run/docker.sock:/var/run/docker.sock"
-  ["memos"]="/dockers-date/memos/data:/var/opt/memos"
-  ["moontv"]="/dockers-date/moontv/data:/opt/app/data"
-  ["portainer"]="/dockers-date/portainer/data:/data,/var/run/docker.sock:/var/run/docker.sock"
-  ["sub-store"]="/dockers-date/sub-store/data:/opt/app/data"
-  ["xh-panel"]="/dockers-date/xh-panel/date:/date,/dockers-date/xh-panel/conf:/app/conf,/var/run/docker.sock:/var/run/docker.sock"
-  ["ange-clashboard"]="/dockers-date/ange-clashboard/data:/app/data"
-  ["new-api"]="/dockers-date/new-api/data:/data"
+  ["smartdns"]="/dockers-data/smartdns/conf:/etc/smartdns"
+  ["adguardhome"]="/dockers-data/adguardhome/config:/opt/adguardhome/conf,/dockers-data/adguardhome/work:/opt/adguardhome/work"
+  ["agh1"]="/dockers-data/agh1/work:/opt/adguardhome/work,/dockers-data/agh1/conf:/opt/adguardhome/conf"
+  ["agh2"]="/dockers-data/agh2/work:/opt/adguardhome/work,/dockers-data/agh2/conf:/opt/adguardhome/conf"
+  ["lucky"]="/dockers-data/lucky/conf:/goodluck"
+  ["dpanel"]="/dockers-data/dpanel/data:/dpanel,/var/run/docker.sock:/var/run/docker.sock"
+  ["memos"]="/dockers-data/memos/data:/var/opt/memos"
+  ["moontv"]="/dockers-data/moontv/data:/opt/app/data"
+  ["portainer"]="/dockers-data/portainer/data:/data,/var/run/docker.sock:/var/run/docker.sock"
+  ["sub-store"]="/dockers-data/sub-store/data:/opt/app/data"
+  ["xh-panel"]="/dockers-data/xh-panel/data:/data,/dockers-data/xh-panel/conf:/app/conf,/var/run/docker.sock:/var/run/docker.sock"
+  ["ange-clashboard"]="/dockers-data/ange-clashboard/data:/app/data"
+  ["new-api"]="/dockers-data/new-api/data:/data"
 )
 
 # 配置表：环境变量
@@ -77,7 +77,7 @@ declare -A RESTART_MAP=(
 
 # 定义目录结构
 COMPOSE_DIR="/dockers/${NAME}"
-DATA_DIR="/dockers-date/${NAME}"
+DATA_DIR="/dockers-data/${NAME}"
 COMPOSE_FILE="${COMPOSE_DIR}/docker-compose.yml"
 RESTART_POLICY="${RESTART_MAP[$NAME]:-unless-stopped}"
 
