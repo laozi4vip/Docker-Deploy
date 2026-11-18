@@ -46,7 +46,7 @@ chmod +x deploy-container.sh
 ./deploy-container.sh lucky gdy666/lucky "" host   #默认端口16601
 ./deploy-container.sh dpanel dpanel/dpanel:latest "" host  
 ./deploy-container.sh memos neosmemo/memos:stable 5230:5230 bridge
-./deploy-container.sh moontv ghcr.io/samqin123/moontv:latest 8888:3000 bridge
+./deploy-container.sh libretv ghcr.io/librespark/libretv:latest 8888:3000 bridge
 ./deploy-container.sh portainer portainer/portainer-ce:latest 9000:9000 bridge
 ./deploy-container.sh sub-store xream/sub-store 3001:3001 bridge
 ./deploy-container.sh xh-panel ghcr.io/laozixh/xh-panel:latest 1114:3005 bridge                    #默认账号为 admin ，密码为 admin
