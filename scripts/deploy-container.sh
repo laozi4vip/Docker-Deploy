@@ -19,11 +19,18 @@ if [[ "$NAME" == "new-api" ]]; then
   PORT="${PORT:-3000:3000}"
 fi
 
+# LibreTV 默认参数，也可以通过命令行覆盖
+if [[ "$NAME" == "libretv" ]]; then
+  IMAGE="${IMAGE:-ghcr.io/librespark/libretv:latest}"
+  PORT="${PORT:-8888:8080}"
+fi
+
 # 参数校验
 if [[ -z "$NAME" || -z "$IMAGE" ]]; then
   echo "❌ 用法: $0 <容器名> <镜像名> [端口映射] [host|bridge]"
   echo "   Sub-Store 快捷部署: $0 sub-store"
   echo "   New API 快捷部署:   $0 new-api"
+  echo "   LibreTV 快捷部署:   $0 libretv"
   exit 1
 fi
 
@@ -62,6 +69,7 @@ SUB_STORE_FRONTEND_BACKEND_PATH=/xh
 SUB_STORE_CORS_ALLOWED_ORIGINS=http://10.0.0.3:3001,https://sub.xinghui.info:4443
 SUB_STORE_BACKEND_SYNC_CRON=55 23 * * *"
   ["new-api"]="TZ=Asia/Shanghai"
+  ["libretv"]="PASSWORD=hhxxttxs121"
 )
 
 # 配置表：容器所属网络（可选）
