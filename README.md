@@ -49,7 +49,7 @@ SKIP="sub-store,libretv" ./deploy-container.sh all
 
 另可单独部署（不列入 `all`，因为当前主机已删除这些服务）：`smartdns`、`agh1`、`agh2`、`moontv`。
 
-## 相比原脚本的改进
+## 改进
 
 1. **参数全部内置** —— `IMAGE_MAP` / `PORT_MAP` / `NETMODE_MAP` 三张表，`./deploy-container.sh new-api` 一条命令完成部署，不用再背镜像名和端口。
 2. **`all` 批量部署** —— 按依赖顺序逐个部署，单个失败不中断，最后输出成功/失败汇总和 `docker ps` 状态表。
