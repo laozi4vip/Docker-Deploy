@@ -51,7 +51,7 @@ chmod +x deploy-container.sh
 ./deploy-container.sh sub-store xream/sub-store 3001:3001 bridge
 ./deploy-container.sh xh-panel ghcr.io/laozixh/xh-panel:latest 1114:3005 bridge                    #默认账号为 admin ，密码为 admin
 ./deploy-container.sh ange-clashboard ghcr.io/liandu2024/ange-clashboard:latest 6588:2048 bridge
-./deploy-container.sh new-api calciumion/new-api:latest "" 8090:3000 
+./deploy-container.sh new-api calciumion/new-api:latest 8090:3000
 ```
 
 ## 支持容器列表
