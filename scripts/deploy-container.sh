@@ -80,7 +80,7 @@ SUB_STORE_BACKEND_SYNC_CRON=55 23 * * *"
   ["libretv"]="PASSWORD=hhxxttxs121"
   ["iptv-api"]="PUBLIC_SCHEME=http
 PUBLIC_DOMAIN=10.0.0.3
-PUBLIC_PORT=80
+PUBLIC_PORT=1380
 PUBLIC_URL=
 NGINX_HTTP_PORT=8080
 CDN_URL=
@@ -127,12 +127,6 @@ if [[ "$NAME" == "new-api" ]]; then
 
   NEW_API_SECRET="$(tr -d '[:space:]' < "$SECRET_FILE")"
   ENV_MAP["new-api"]+=$'\n'"SESSION_SECRET=${NEW_API_SECRET}"
-fi
-
-# IPTV-API：PUBLIC_PORT 跟随 PORT 参数的宿主端口（对应原 compose 的 ${PORT:-80}）
-if [[ "$NAME" == "iptv-api" ]]; then
-  HOST_PORT="${PORT%%:*}"
-  ENV_MAP["iptv-api"]="$(printf '%s\n' "${ENV_MAP["iptv-api"]}" | awk -v p="$HOST_PORT" '/^PUBLIC_PORT=/{$0="PUBLIC_PORT=" p} {print}')"
 fi
 
 # 初始化挂载路径数组并创建目录
