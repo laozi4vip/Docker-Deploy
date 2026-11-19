@@ -25,19 +25,12 @@ if [[ "$NAME" == "libretv" ]]; then
   PORT="${PORT:-8888:8080}"
 fi
 
-# IPTV-API 默认参数，也可以通过命令行覆盖
-if [[ "$NAME" == "iptv-api" ]]; then
-  IMAGE="${IMAGE:-guovern/iptv-api:latest}"
-  PORT="${PORT:-1380:8080}"
-fi
-
 # 参数校验
 if [[ -z "$NAME" || -z "$IMAGE" ]]; then
   echo "❌ 用法: $0 <容器名> <镜像名> [端口映射] [host|bridge]"
   echo "   Sub-Store 快捷部署: $0 sub-store"
   echo "   New API 快捷部署:   $0 new-api"
   echo "   LibreTV 快捷部署:   $0 libretv"
-  echo "   IPTV-API 快捷部署:  $0 iptv-api"
   exit 1
 fi
 
@@ -63,7 +56,6 @@ declare -A VOLUME_MAP=(
   ["xh-panel"]="/dockers-data/xh-panel/data:/data,/dockers-data/xh-panel/conf:/app/conf,/var/run/docker.sock:/var/run/docker.sock"
   ["ange-clashboard"]="/dockers-data/ange-clashboard/data:/app/data"
   ["new-api"]="/dockers-data/new-api/data:/data"
-  ["iptv-api"]="/dockers-data/iptv-api/config:/iptv-api/config,/dockers-data/iptv-api/output:/iptv-api/output"
 )
 
 # 配置表：环境变量
@@ -78,13 +70,6 @@ SUB_STORE_CORS_ALLOWED_ORIGINS=http://10.0.0.3:3001,https://sub.xinghui.info:444
 SUB_STORE_BACKEND_SYNC_CRON=55 23 * * *"
   ["new-api"]="TZ=Asia/Shanghai"
   ["libretv"]="PASSWORD=hhxxttxs121"
-  ["iptv-api"]="PUBLIC_SCHEME=http
-PUBLIC_DOMAIN=10.0.0.3
-PUBLIC_PORT=1380
-PUBLIC_URL=
-NGINX_HTTP_PORT=8080
-CDN_URL=
-HTTP_PROXY="
 )
 
 # 配置表：容器所属网络（可选）
@@ -96,11 +81,6 @@ declare -A NETWORK_MAP=(
 # 配置表：重启策略
 declare -A RESTART_MAP=(
   ["sub-store"]="always"
-)
-
-# 配置表：额外注入的 compose 字段（用 | 分隔多行），如 tty/stdin_open
-declare -A EXTRA_MAP=(
-  ["iptv-api"]="tty: true|stdin_open: true"
 )
 
 # 定义目录结构
@@ -191,15 +171,6 @@ services:
     container_name: "${NAME}"
     restart: ${RESTART_POLICY}
 EOF
-
-# 注入额外 compose 字段（tty/stdin_open 等）
-if [[ -n "${EXTRA_MAP[$NAME]:-}" ]]; then
-  IFS='|' read -ra EXTRAS <<< "${EXTRA_MAP[$NAME]}"
-  for line in "${EXTRAS[@]}"; do
-    [[ -z "$line" ]] && continue
-    printf '    %s\n' "$line" >> "$COMPOSE_FILE"
-  done
-fi
 
 # 网络写入（host 优先）
 if [[ "$NETWORK" == "host" ]]; then
