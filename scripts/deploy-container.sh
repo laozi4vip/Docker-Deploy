@@ -28,7 +28,6 @@ declare -A IMAGE_MAP=(
   ["ange-clashboard"]="ghcr.io/liandu2024/ange-clashboard:latest"
   ["new-api"]="calciumion/new-api:latest"
   ["libretv"]="ghcr.io/librespark/libretv:latest"
-  ["moontv"]=""
 )
 
 # ---------- 配置表：端口映射 ----------
@@ -47,7 +46,6 @@ declare -A PORT_MAP=(
   ["ange-clashboard"]="6588:2048"
   ["new-api"]="8090:3000"
   ["libretv"]="8888:8080"
-  ["moontv"]=""
 )
 
 # ---------- 配置表：网络模式（未列出的默认 bridge） ----------
@@ -67,7 +65,6 @@ declare -A VOLUME_MAP=(
   ["lucky"]="/dockers-data/lucky/conf:/goodluck"
   ["dpanel"]="/dockers-data/dpanel/data:/dpanel,/var/run/docker.sock:/var/run/docker.sock"
   ["memos"]="/dockers-data/memos/data:/var/opt/memos"
-  ["moontv"]="/dockers-data/moontv/data:/opt/app/data"
   ["portainer"]="/dockers-data/portainer/data:/data,/var/run/docker.sock:/var/run/docker.sock"
   ["sub-store"]="/dockers-data/sub-store/data:/opt/app/data"
   ["xh-panel"]="/dockers-data/xh-panel/data:/data,/dockers-data/xh-panel/conf:/app/conf,/var/run/docker.sock:/var/run/docker.sock"
@@ -77,12 +74,11 @@ declare -A VOLUME_MAP=(
 
 # ---------- 配置表：环境变量（多变量按行分隔，值可含逗号） ----------
 declare -A ENV_MAP=(
-  ["moontv"]="PASSWORD=hhxxttxs121"
   ["dpanel"]="APP_NAME=dpanel"
   ["sub-store"]="SUB_STORE_BACKEND_MERGE=true
 SUB_STORE_BACKEND_API_PORT=3001
 SUB_STORE_FRONTEND_BACKEND_PATH=/xh
-SUB_STORE_CORS_ALLOWED_ORIGINS=http://10.0.0.3:3001,https://sub.xinghui.info:4443
+SUB_STORE_CORS_ALLOWED_ORIGINS=http://10.0.0.3:3001,https://sub.****.info:4443
 SUB_STORE_BACKEND_SYNC_CRON=55 23 * * *"
   ["new-api"]="TZ=Asia/Shanghai"
   ["libretv"]="PASSWORD=hhxxttxs121"
